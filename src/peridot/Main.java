@@ -12,7 +12,7 @@ import java.io.InputStreamReader;
 public class Main {
     public static void main(String[] args) {
 
-        OAuth twitter = new OAuth("iFGMzcmHYZk3d5ncPwXjA", "wBfv7Z9YT4CEAv8crDqilil0R6AZi5pY0vub5FP0U");
+        OAuth twitter = new OAuth("", "");
 
 
         Setting set = new Setting();
