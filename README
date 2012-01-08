@@ -1,0 +1,27 @@
+peridot は Console Twitter クライアントです。
+また、このクライアントはJavaで書かれています。
+
+このクライアントはThe Apache Software FoundationのApache Licenseに基づくライブラリを使用しています。
+http://www.apache.org/
+
+
+使い方
+1.Java -jar peridot.jarなどで起動します
+2.Pinコードを取得するためのURLが表示されるのでアクセスしてPinコードを取ってきて入力する。
+3.enjoy it!
+
+4.コマンドのオプション(引数ではなく"What's up ? : "となっているときに入力)
+/rep id tweet     :  id宛てにリプライします。idは表示されているツイートの番号です。
+/fav id           :  お気に入り
+/unfav id         :  お気に入りから解除
+/rm id            :  削除
+/rt id            :  リツイート
+
+/find str         :  strを検索します。
+
+/rep              :  Mention
+/fav              :  自分のお気に入り
+/get              :  TimeLine
+
+/sum              :  rt / fav の数を表示するかどうかです。1回ごとにON/OFF(結構APIがかかります)
+/exit             :  exit
