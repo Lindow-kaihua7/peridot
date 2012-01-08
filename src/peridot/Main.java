@@ -10,7 +10,7 @@ import java.io.InputStreamReader;
  * @author lindow
  */
 public class Main {
-    public static void main() {
+    public static void main(String[] args) {
 
         OAuth twitter = new OAuth("iFGMzcmHYZk3d5ncPwXjA", "wBfv7Z9YT4CEAv8crDqilil0R6AZi5pY0vub5FP0U");
 
