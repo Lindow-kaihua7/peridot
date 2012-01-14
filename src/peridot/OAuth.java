@@ -1,29 +1,22 @@
 package peridot;
 
-import java.io.BufferedReader;
-import java.io.Console;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import javax.crypto.Mac;
 import java.net.URLEncoder;
-
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetEncoder;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import javax.net.ssl.HttpsURLConnection;
 import net.arnx.jsonic.JSON;
-
-
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -61,16 +54,12 @@ public class OAuth {
         public String screenName;
         public String name;
         public String text;
-        public String favoriters;
-        public String retweeters;
 
-        Tweet(String statusid, String screenname, String name, String text, String fc, String rc) {
+        Tweet(String statusid, String screenname, String name, String text) {
             this.statusID = statusid;
             this.screenName = screenname;
             this.name = name;
             this.text = text;
-            this.favoriters = fc;
-            this.retweeters = rc;
         }
     }
     /**
@@ -106,12 +95,16 @@ public class OAuth {
     private String mentionsURL = "https://api.twitter.com/1/statuses/mentions.json";
     private String favoritesURL = "https://api.twitter.com/1/favorites.json";
     private String timeLineURL = "https://api.twitter.com/1/statuses/home_timeline.json";
+    
+    /*
     private String summaryURL1 = "http://api.twitter.com/i/statuses/";
     private String summaryURL2 = "/activity/summary.json";
     private String summaryFlag = "";
+    * 
+    */
 
     /**
-     * @return 状況
+     * @return oauthStatus
      */
     public oauthStatus getStatus() {
         return this.status;
@@ -154,21 +147,6 @@ public class OAuth {
     }
 
     /**
-     * @param value SummaryFlag
-     */
-    public void setSummaryFlag(String value) {
-        this.summaryFlag = value;
-    }
-
-    /**
-     * @return SummaryFlag
-     */
-    public String getSummaryFlag() {
-        return this.summaryFlag;
-    }
-
-    /**
-     * TwitterAPI 初期化
      * 
      * @param consumerKey consumerKey
      * @param consumerSecret consumerSecret
@@ -185,9 +163,9 @@ public class OAuth {
     }
 
     /**
-     * AccessTokenを取得する
+     * get AccessToken
      * 
-     * @return 成否 
+     * @return success or not
      */
     public boolean accessTokenAuthorization() {
         if (this.accessTokenSecret != null && this.accessToken != null) {
@@ -261,10 +239,10 @@ public class OAuth {
     }
 
     /**
-     * PinコードのURLを取得
-     * requestTokenの取得
+     * get PinCode URL
+     * get requestToken
      * 
-     * @return Pinコードを取得するためのURL
+     * @return URL
      */
     public String requestTokenAuthorization() {
         SortedMap<String, String> params = getParamString(this.consumerKey, null, null, null);
@@ -334,17 +312,11 @@ public class OAuth {
         return this.authorizeURL + "?oauth_token=" + this.requestToken;
     }
 
-    /*
-    public int tweetNum() {
-    return tweetList.size();
-    }
-     * 
-     */
     /**
-     * ツイートする
+     * Post to Twitter
      * 
-     * @param str 内容
-     * @param replyStatusID リプライ元のStatusID
+     * @param str content
+     * @param replyStatusID StatusID
      */
     public boolean post(String str, String replyStatusID) {
         String tweet = urlEncode(str);
@@ -389,7 +361,6 @@ public class OAuth {
                 System.out.println(con.getResponseCode());
             }
         } catch (Exception e) {
-            System.out.println("Update Failed...");
             this.status = oauthStatus.FAILED;
             return false;
         }
@@ -400,7 +371,7 @@ public class OAuth {
     }
 
     /**
-     * 送信するためのパラメータ作成
+     * generate parameter string
      * 
      * @param consumerkey consumerKey
      * @param oauthtoken Token(RequestToken or AccessToken)
@@ -429,7 +400,7 @@ public class OAuth {
     }
 
     /**
-     * タイムラインを取得する
+     * get TimeLine
      */
     public void getTimeLine() {
         String res = basicTwitterAccess("GET", this.timeLineURL);
@@ -452,12 +423,7 @@ public class OAuth {
                         String name = user.get("name").toString();
                         String text = map.get("text").toString();
 
-                        String[] fr = null;
-                        if (getSummaryFlag() == "true") {
-                            fr = getSummary(id);
-                        }
-
-                        setTweets(id, sn, name, text, fr);
+                        setTweets(id, sn, name, text);
                     }
 
                 }
@@ -469,7 +435,7 @@ public class OAuth {
     }
 
     /**
-     * 自分のお気に入りを取得する
+     * get Favorites
      */
     public void getFavorites() {
         String res = basicTwitterAccess("GET", this.favoritesURL);
@@ -492,12 +458,7 @@ public class OAuth {
                         String name = user.get("name").toString();
                         String text = map.get("text").toString();
 
-                        String[] fr = null;
-                        if (this.summaryFlag.equals("true")) {
-                            fr = getSummary(id);
-                        }
-
-                        setTweets(id, sn, name, text, fr);
+                        setTweets(id, sn, name, text);
                     }
 
                 }
@@ -508,7 +469,7 @@ public class OAuth {
     }
 
     /**
-     * Mentionを取得
+     * get Mentions
      */
     public void getMentions() {
         String res = basicTwitterAccess("GET", this.mentionsURL);
@@ -529,13 +490,8 @@ public class OAuth {
                         String sn = user.get("screen_name").toString();
                         String name = user.get("name").toString();
                         String text = map.get("text").toString();
-
-                        String[] fr = null;
-                        if (this.summaryFlag.equals("true")) {
-                            fr = getSummary(id);
-                        }
-
-                        setTweets(id, sn, name, text, fr);
+                        
+                        setTweets(id, sn, name, text);
                     }
 
                 }
@@ -546,9 +502,9 @@ public class OAuth {
     }
 
     /**
-     * お気に入りに追加
+     * add to favorites
      * 
-     * @param statusID ツイートのID
+     * @param statusID statusid
      */
     public boolean fav(String statusID) {
         String res = basicTwitterAccess("POST", this.favURL + statusID + ".xml");
@@ -556,19 +512,19 @@ public class OAuth {
     }
 
     /**
-     * お気に入りを解除
+     * remove from favorites
      * 
-     * @param statusID ツイートのID
+     * @param statusID statusid
      */
     public boolean unFav(String statusID) {
-        String res = basicTwitterAccess("POST", this.favURL + statusID + ".xml");
+        String res = basicTwitterAccess("POST", this.unfavURL + statusID + ".xml");
         return (res != null);
     }
 
     /**
-     * リツイートする
+     * Retweet
      * 
-     * @param statusID ツイートのID
+     * @param statusID statusid
      */
     public boolean retweet(String statusID) {
         String res = basicTwitterAccess("POST", this.retweetURL + statusID + ".xml");
@@ -576,9 +532,9 @@ public class OAuth {
     }
 
     /**
-     * ツイートを削除
+     * remove post
      * 
-     * @param statusID ツイートのID
+     * @param statusID statusid
      */
     public boolean remove(String statusID) {
         String res = basicTwitterAccess("POST", this.removeURL + statusID + ".xml");
@@ -586,9 +542,9 @@ public class OAuth {
     }
 
     /**
-     * 検索する
+     * search query word
      * 
-     * @param query 検索キーワード
+     * @param query queryword
      */
     public void search(String query) {
         HttpClient client = new DefaultHttpClient();
@@ -625,13 +581,8 @@ public class OAuth {
                                 String name = map.get("from_user_name").toString();
                                 String text = map.get("text").toString();
 
-                                String[] fr = null;
-                                if (this.summaryFlag.equals("true")) {
-                                    fr = getSummary(id);
-                                }
 
-
-                                setTweets(id, sn, name, text, fr);
+                                setTweets(id, sn, name, text);
                             }
                         }
                     } catch (Exception e) {
@@ -652,115 +603,21 @@ public class OAuth {
     }
 
     /**
-     * Summaryを取得
-     * 
-     * @param statusID ツイートのstatusID
-     * 
-     * @return String[] [0] : favoriters_count / [1] : retweeters_count 
-     */
-    public String[] getSummary(String statusID) {
-        String res = null;
-        res = basicTwitterAccess("GET", this.summaryURL1 + statusID + this.summaryURL2);
-        if (res == null) {
-            return new String[2];
-        }
-
-        if (res != null) {
-            try {
-                HashMap map = JSON.decode(res, HashMap.class);
-
-                if (map.containsKey("favoriters_count") && map.containsKey("retweeters_count")) {
-                    String fc = map.get("favoriters_count").toString();
-                    String rc = map.get("retweeters_count").toString();
-
-                    String[] array = new String[2];
-                    array[0] = fc;
-                    array[1] = rc;
-
-                    return array;
-                }
-            } catch (Exception e) {
-                System.out.println("GetSummary Failed...");
-            }
-        }
-        return new String[2];
-    }
-
-    /**
-     * UserStream接続
+     * connect to UserStream
      */
     public void beginUserStream() {
-
-        /*
-        String response = null;
-        do {
-        response = basicTwitterAccess("GET", this.friendsListURL);
-        
-        if (response == null) {
-        try {
-        Thread.sleep(300);
-        } catch (InterruptedException ex) {
-        }
-        }
-        } while (response == null);
-        
-        try {
-        DocumentBuilderFactory dbfactory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder builder = dbfactory.newDocumentBuilder();
-        
-        Document doc = builder.parse(new InputSource(new StringReader(response)));
-        
-        Element root = doc.getDocumentElement();
-        
-        StringBuilder strbuild = new StringBuilder();
-        //NodeList idList = root.getElementsByTagName("ids");
-        
-        NodeList ch = root.getChildNodes();
-        
-        for (int i = 0; i < ch.getLength(); i++) {
-        if (ch.item(i).getNodeName() == "id") {
-        strbuild.append(ch.item(i).getNodeValue()).append(",");
-        }
-        }
-        strbuild.append(this.accessToken.substring(0, this.accessToken.indexOf("-")));
-        
-        //http://dev.twitter.com/docs/streaming-api/user-streams
-        
-        //System.out.println(strbuild);
-        
-        
-        //gt.run("{\"friends\":[" + strbuild + "]}");
-        //gt.start();
-        
-        } catch (Exception e) {
-        e.printStackTrace();
-        }
-         * 
-         */
         gt.start();
     }
 
     /**
-     * UserStream終了
+     * disconnect to UserStream
      */
     public void endUserStream() {
         gt.halt();
-
-
-
-
-
-
-
-
-
-
-
-
     }
 
     /**
-     * UserStreamを処理
+     * UserStream
      */
     class userStream extends Thread {
 
@@ -824,7 +681,7 @@ public class OAuth {
                                             String name = user.get("name").toString();
                                             String txt = map.get("text").toString();
 
-                                            setTweets(id, sn, name, txt, null);
+                                            setTweets(id, sn, name, txt);
                                         }
                                     }
                                 } else {
@@ -868,26 +725,19 @@ public class OAuth {
     }
 
     /**
-     * Tweetをセット
-     * @param statusID ツイートID
-     * @param screenName アカウント名
-     * @param name 表示名
-     * @param text 内容
+     * TweetList
+     * 
+     * @param statusID statusid
+     * @param screenName screenname
+     * @param name name
+     * @param text content
      */
-    public void setTweets(String statusID, String screenName, String name, String text, String[] count) {
-
-        String fc = null;
-        String rc = null;
-        if (count != null) {
-            fc = count[0];
-            rc = count[1];
-        }
-
+    public void setTweets(String statusID, String screenName, String name, String text) {
         synchronized (tweetList) {
             if (!tweetList.isEmpty() && statusID.compareTo(tweetList.get(0).statusID) < 0) {
-                tweetList.add(new Tweet(statusID, screenName, name, text, fc, rc));
+                tweetList.add(new Tweet(statusID, screenName, name, text));
             } else {
-                tweetList.add(0, new Tweet(statusID, screenName, name, text, fc, rc));
+                tweetList.add(0, new Tweet(statusID, screenName, name, text));
             }
             if (tweetList.size() > 20) {
                 tweetList.remove(tweetList.size() - 1);
@@ -937,9 +787,6 @@ public class OAuth {
                 count++;
                 if (count < line) {
                     System.out.println("[" + count + "] -- " + tw.name + " [ @" + tw.screenName + " ]" + System.getProperty("line.separator") + tw.text);
-                    if (tw.favoriters != null && tw.retweeters != null) {
-                        System.out.println("fav : " + tw.favoriters + "|" + "Rt : " + tw.retweeters);
-                    }
                     System.out.println("----------");
                 }
             }
@@ -949,7 +796,7 @@ public class OAuth {
     }
 
     /**
-     * APIアクセス
+     * API access
      */
     private String basicTwitterAccess(String method, String url) {
         SortedMap<String, String> params = getParamString(this.consumerKey, this.accessToken, null, null);
@@ -1049,7 +896,7 @@ public class OAuth {
     }
 
     /**
-     * ヘッダーを作る
+     * generate header
      */
     private String getHeader(SortedMap<String, String> params) {
         String paramStr = "";
@@ -1065,7 +912,7 @@ public class OAuth {
     }
 
     /**
-     * シグネチャを作成
+     * create signature
      */
     private String getSig(String key, String text) {
 
@@ -1089,12 +936,15 @@ public class OAuth {
     }
 
     /**
-     * @return 現在時刻
+     * @return time
      */
     private long getTime() {
         return System.currentTimeMillis() / 1000;
     }
 
+    /**
+     * URL Encode
+     */
     private static String urlEncode(String string) {
         try {
             return URLEncoder.encode(string, "UTF-8");

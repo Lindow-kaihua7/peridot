@@ -1,15 +1,16 @@
 package peridot;
 
-import peridot.OAuth.Tweet;
-import peridot.OAuth.oauthStatus;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import peridot.OAuth.Tweet;
+import peridot.OAuth.oauthStatus;
 
 /**
  *
  * @author lindow
  */
 public class Main {
+
     public static void main(String[] args) {
 
         OAuth twitter = new OAuth("", "");
@@ -21,7 +22,6 @@ public class Main {
 
         twitter.setAccessToken(set.getAccessToken());
         twitter.setAccessTokenSecret(set.getAccessSecret());
-        twitter.setSummaryFlag(set.getSummaryFlag());
 
         twitter.accessTokenAuthorization();
 
@@ -64,14 +64,8 @@ public class Main {
                 }
             } while (twitter.getStatus() != oauthStatus.AUTHORIZED);
 
-            if (twitter.getSummaryFlag() == null) {
-                twitter.setSummaryFlag("false");
-            }
-            System.out.println(twitter.getSummaryFlag());
-
             set.setAccessToken(twitter.getAccessToken());
             set.setAccessSecret(twitter.getAccessTokenSecret());
-            set.setSummaryFlag(twitter.getSummaryFlag());
             set.saveSettings();
         }
 
@@ -138,19 +132,6 @@ public class Main {
                         twitter.getFavorites();
                     } else if (split[0].equals("/get")) {
                         twitter.getTimeLine();
-                    } else if (split[0].equals("/sum")) {
-                        if (set.getSummaryFlag() != null) {
-                            if (set.getSummaryFlag().equals("false")) {
-                                set.setSummaryFlag("true");
-                            } else {
-                                set.setSummaryFlag("false");
-                            }
-                        } else {
-                            set.setSummaryFlag("false");
-                        }
-                        set.saveSettings();
-                        twitter.setSummaryFlag(set.getSummaryFlag());
-                        System.out.print(set.getSummaryFlag() + "に設定しました。");
                     } else if (split[0].equals("/exit")) {
                         System.out.print("\u001b[H\u001b[2J");
                         System.out.flush();
@@ -165,7 +146,11 @@ public class Main {
                     if (tweet.length() > 1 && tweet.charAt(1) == '/') {
                         System.out.print("Updating...");
                         twitter.post(tweet.substring(1), null);
-                        System.out.println("...done!");
+                        if (twitter.getStatus() == oauthStatus.SUCCESS) {
+                            System.out.println("...done!");
+                        } else {
+                            System.out.println("...Failed!");
+                        }
                     } else {
                         System.out.println("[UNKNOWN COMMAND] - USAGE: /rep, /fav, /unfav, /rt, /rm, /find, /sum, /exit");
                     }
@@ -173,7 +158,11 @@ public class Main {
             } else {
                 System.out.print("Updating...");
                 twitter.post(tweet, null);
-                System.out.println("...done!");
+                if (twitter.getStatus() == oauthStatus.SUCCESS) {
+                    System.out.println("...done!");
+                } else {
+                    System.out.println("...Failed!");
+                }
             }
             System.out.println("What's up ? : ");
         }

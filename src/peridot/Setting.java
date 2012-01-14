@@ -17,7 +17,6 @@ public class Setting {
 
     public String Token;
     public String Secret;
-    public String summaryFlag;
 
     public Setting() {
     }
@@ -56,21 +55,27 @@ public class Setting {
      * 
      * @return summaryFlag
      */
+    /*
     public String getSummaryFlag() {
         return this.summaryFlag;
     }
+    * 
+    */
     
     /**
      * @param value summaryFlag
      */
+    /*
     public void setSummaryFlag(String value) {
         this.summaryFlag = value;
     }
+    * 
+    */
 
     /**
-     * 指定したパス[path]に、XMLファイルとして保存します。
-     * @param path 保存するパス。存在しない場合、作成する。
-     * @param object 保存するもの
+     * save to XML File
+     * @param path PATH to save
+     * @param object object
      */
     public synchronized void writeXML(String path, Object object) {
         XMLEncoder enc = null;
@@ -82,7 +87,6 @@ public class Setting {
             enc.close();
             byte[] xmlbuff = out.toByteArray();
 
-            //出力
             fileStream = new FileOutputStream(path);
             fileStream.write(xmlbuff);
             fileStream.flush();
@@ -107,8 +111,8 @@ public class Setting {
     }
 
     /**
-     * XMLファイルから、読み込む
-     * @param path 保存されているパス。
+     * read from XML File
+     * @param path PATH
      */
     public Object readXML(String path) {
         XMLDecoder d = null;
@@ -126,7 +130,7 @@ public class Setting {
     }
 
     /**
-     * データを保存
+     * save object
      */
     public void saveSettings() {
         try {
@@ -139,13 +143,12 @@ public class Setting {
     }
 
     /**
-     * データを読み込む
+     * read object
      */
     public void loadSettings() {
         try {
             this.Token = ((Setting) readXML(System.getProperty("user.home") + System.getProperty("file.separator") + "config.settings")).getAccessToken();
             this.Secret = ((Setting) readXML(System.getProperty("user.home") + System.getProperty("file.separator") + "config.settings")).getAccessSecret();
-            this.summaryFlag = ((Setting) readXML(System.getProperty("user.home") + System.getProperty("file.separator") + "config.settings")).getSummaryFlag();
         } catch (Exception e) {
             System.out.println("Unable to load file.");
         }
