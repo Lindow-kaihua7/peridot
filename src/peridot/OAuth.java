@@ -46,7 +46,7 @@ public class OAuth {
     }
 
     /**
-     * Tweetの内容
+     * Tweets
      */
     class Tweet {
 
@@ -418,8 +418,6 @@ public class OAuth {
 
                 }
             } catch (Exception e) {
-                e.printStackTrace();
-                System.out.println("GetTimeLine Failed...");
             }
         }
     }
@@ -582,7 +580,6 @@ public class OAuth {
             System.out.println("finished.");
         } catch (IOException e) {
             this.status = oauthStatus.FAILED;
-            return;
         } finally {
             try {
                 reader.close();
@@ -686,7 +683,6 @@ public class OAuth {
                 } catch (IOException e) {
                     System.out.println("Failed.");
                     status = oauthStatus.FAILED;
-                    e.getStackTrace();
                 } finally {
                     try {
                         reader.close();
@@ -694,7 +690,6 @@ public class OAuth {
                         httpget.abort();
                     }
                 }
-
 
                 if (response == null) {
                     try {
@@ -743,11 +738,6 @@ public class OAuth {
         synchronized (tweetList) {
             int start = 0;
             int count = 0;
-
-            Console console = System.console();
-            if (console == null) {
-                System.out.println("Couldn't get Console object !");
-            }
 
             System.out.print("\u001b[H\u001b[2J");
             System.out.flush();
@@ -807,7 +797,6 @@ public class OAuth {
 
         String authorizationHeader = getHeader(params);
 
-        String line = null;
         String res = "";
 
         if (method == "GET") {
@@ -816,6 +805,7 @@ public class OAuth {
             HttpGet httpget = new HttpGet(url);
             httpget.addHeader("Authorization", authorizationHeader);
 
+            String line = null;
             BufferedReader reader = null;
             try {
                 HttpResponse response = client.execute(httpget);
@@ -837,13 +827,11 @@ public class OAuth {
             } catch (IOException e) {
                 System.out.println("Failed.");
                 this.status = oauthStatus.FAILED;
-                e.printStackTrace();
             } finally {
                 try {
                     reader.close();
                 } catch (IOException e) {
                     httpget.abort();
-                    e.printStackTrace();
                 }
             }
         } else if (method == "POST") {
@@ -851,6 +839,7 @@ public class OAuth {
             HttpPost httppost = new HttpPost(url);
             httppost.addHeader("Authorization", authorizationHeader);
 
+            String line = null;
             BufferedReader reader = null;
             try {
                 HttpResponse response = client.execute(httppost);

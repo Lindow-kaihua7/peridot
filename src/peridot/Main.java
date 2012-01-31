@@ -31,7 +31,7 @@ public class Main {
         if (twitter.getStatus() == oauthStatus.NOT_AUTHORIZED) {
             String url = "";
             System.out.println();
-            System.out.println("Please wait for get an authorization key....");
+            System.out.println("Please wait....");
 
             do {
                 url = twitter.requestTokenAuthorization();
@@ -51,7 +51,6 @@ public class Main {
             try {
                 twitter.setPin(br.readLine());
             } catch (Exception e) {
-                System.err.println("Pin URL get Failed...");
             }
 
             do {
