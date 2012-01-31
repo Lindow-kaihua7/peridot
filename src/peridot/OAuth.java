@@ -63,7 +63,7 @@ public class OAuth {
         }
     }
     /**
-     * 
+     *
      */
     static ArrayList<Tweet> tweetList = new ArrayList<Tweet>();
     static String message = "What's up ? :";
@@ -71,7 +71,7 @@ public class OAuth {
     static CharsetEncoder charsetEncoder = charset.newEncoder();
     userStream gt = new userStream();
     /**
-     * 
+     *
      */
     private oauthStatus status;
     private String requestToken = "";
@@ -83,7 +83,7 @@ public class OAuth {
     private String accessTokenSecret = "";
     private String requestTokenURL = "https://api.twitter.com/oauth/request_token";
     private String authorizeURL = "https://twitter.com/oauth/authorize";
-    private String accesstokenURL = "https://api.twitter.com/oauth/access_token";
+    private String accessTokenURL = "https://api.twitter.com/oauth/access_token";
     private String postURL = "https://api.twitter.com/statuses/update.xml";
     private String userStreamURL = "https://userstream.twitter.com/2/user.json";
     private String friendsListURL = "https://api.twitter.com/1/friends/ids.xml";
@@ -95,13 +95,6 @@ public class OAuth {
     private String mentionsURL = "https://api.twitter.com/1/statuses/mentions.json";
     private String favoritesURL = "https://api.twitter.com/1/favorites.json";
     private String timeLineURL = "https://api.twitter.com/1/statuses/home_timeline.json";
-    
-    /*
-    private String summaryURL1 = "http://api.twitter.com/i/statuses/";
-    private String summaryURL2 = "/activity/summary.json";
-    private String summaryFlag = "";
-    * 
-    */
 
     /**
      * @return oauthStatus
@@ -111,7 +104,6 @@ public class OAuth {
     }
 
     /**
-     * 
      * @param value PIN
      */
     public void setPin(String value) {
@@ -147,7 +139,7 @@ public class OAuth {
     }
 
     /**
-     * 
+     *
      * @param consumerKey consumerKey
      * @param consumerSecret consumerSecret
      */
@@ -164,8 +156,8 @@ public class OAuth {
 
     /**
      * get AccessToken
-     * 
-     * @return success or not
+     *     
+* @return success or not
      */
     public boolean accessTokenAuthorization() {
         if (this.accessTokenSecret != null && this.accessToken != null) {
@@ -187,7 +179,7 @@ public class OAuth {
         }
         paramStr = paramStr.substring(1);
 
-        String text = "POST" + "&" + urlEncode(this.requestTokenURL) + "&" + urlEncode(paramStr);
+        String text = "POST" + "&" + urlEncode(this.accessTokenURL) + "&" + urlEncode(paramStr);
         String key = urlEncode(consumerSecret) + "&" + urlEncode(this.requestTokenSecret);
 
         String sig = getSig(key, text);
@@ -199,7 +191,7 @@ public class OAuth {
 
 
         try {
-            URL connectUrl = new URL(this.accesstokenURL);
+            URL connectUrl = new URL(this.accessTokenURL);
             HttpURLConnection con = (HttpURLConnection) connectUrl.openConnection();
             con.setRequestMethod("POST");
             con.addRequestProperty("Authorization", authorizationHeader);
@@ -239,10 +231,9 @@ public class OAuth {
     }
 
     /**
-     * get PinCode URL
-     * get requestToken
-     * 
-     * @return URL
+     * get PinCode URL get requestToken
+     *     
+* @return URL
      */
     public String requestTokenAuthorization() {
         SortedMap<String, String> params = getParamString(this.consumerKey, null, null, null);
@@ -274,7 +265,6 @@ public class OAuth {
 
 
             if (con.getResponseCode() == HttpURLConnection.HTTP_OK) {
-                //System.out.println("HTTP_OK");
                 BufferedReader br = new BufferedReader(new InputStreamReader(con.getInputStream(), "UTF-8"));
 
                 String line = null;
@@ -377,7 +367,7 @@ public class OAuth {
      * @param oauthtoken Token(RequestToken or AccessToken)
      * @param oauthverifier PinCode
      * @param status Tweet
-     * @return 
+     * @return
      */
     private SortedMap getParamString(String consumerKey, String oauthtoken, String oauthverifier, String status) {
         SortedMap<String, String> params = new TreeMap<String, String>();
@@ -490,7 +480,7 @@ public class OAuth {
                         String sn = user.get("screen_name").toString();
                         String name = user.get("name").toString();
                         String text = map.get("text").toString();
-                        
+
                         setTweets(id, sn, name, text);
                     }
 
@@ -503,7 +493,7 @@ public class OAuth {
 
     /**
      * add to favorites
-     * 
+     *
      * @param statusID statusid
      */
     public boolean fav(String statusID) {
@@ -513,7 +503,7 @@ public class OAuth {
 
     /**
      * remove from favorites
-     * 
+     *
      * @param statusID statusid
      */
     public boolean unFav(String statusID) {
@@ -523,7 +513,7 @@ public class OAuth {
 
     /**
      * Retweet
-     * 
+     *
      * @param statusID statusid
      */
     public boolean retweet(String statusID) {
@@ -543,7 +533,7 @@ public class OAuth {
 
     /**
      * search query word
-     * 
+     *
      * @param query queryword
      */
     public void search(String query) {
@@ -880,7 +870,6 @@ public class OAuth {
             } catch (IOException e) {
                 this.status = oauthStatus.FAILED;
             } finally {
-                //HTTP接続の「優雅な」解放も兼ねる
                 try {
                     reader.close();
                 } catch (IOException e) {
@@ -888,7 +877,6 @@ public class OAuth {
                 }
             }
         }
-
 
         this.status = oauthStatus.SUCCESS;
 
@@ -914,19 +902,13 @@ public class OAuth {
     /**
      * create signature
      */
-    private String getSig(String key, String text) {
-
-        //String signatureBaseString = consumerSecret + "&" + accessSecret;
-
-        SecretKeySpec signingKey = new SecretKeySpec(key.getBytes(), "HmacSHA1");
+    private String getSig(String key, String text) {SecretKeySpec signingKey = new SecretKeySpec(key.getBytes(), "HmacSHA1");
         Mac mac;
         try {
             mac = Mac.getInstance(signingKey.getAlgorithm());
             mac.init(signingKey);
             byte[] rawHmac = mac.doFinal(text.getBytes());
             String sig = new BASE64Encoder().encode(rawHmac);
-            // 署名をパラメータに追加
-            //params.put("oauth_signature", sig);
             return sig;
         } catch (InvalidKeyException ex) {
         } catch (NoSuchAlgorithmException ex) {

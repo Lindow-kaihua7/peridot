@@ -31,7 +31,7 @@ public class Main {
         if (twitter.getStatus() == oauthStatus.NOT_AUTHORIZED) {
             String url = "";
             System.out.println();
-            System.out.println("Please wait for get a authorization key....");
+            System.out.println("Please wait for get an authorization key....");
 
             do {
                 url = twitter.requestTokenAuthorization();
