@@ -12,7 +12,6 @@ import peridot.OAuth.oauthStatus;
 public class Main {
 
     public static void main(String[] args) {
-
         OAuth twitter = new OAuth("", "");
 
 
@@ -69,11 +68,31 @@ public class Main {
         }
 
         System.out.println();
-        System.out.println("UserStream Connecting...");
+        System.out.println("Connecting...");
 
         twitter.beginUserStream();
         twitter.getTimeLine();
+        //twitter.getFavorites();
+        /*
+        if (args.length != 0) {
+            if (args.length == 1) {
+                String op = args[0];
+                String op2 = op.substring(1);
 
+                if (op2.equals("rep")) {
+                    twitter.getMentions();
+                } else if (op2.equals("fav")) {
+                    twitter.getFavorites();
+                } else if (op2.equals("get")) {
+                    twitter.getTimeLine();
+                } else {
+                    System.out.println("[UNKNOWN COMMAND] - USAGE: -get -rep, -fav");
+                }
+
+            }
+            System.exit(0);
+        }
+        */
 
         while (true) {
             String tweet = "";
@@ -151,7 +170,7 @@ public class Main {
                             System.out.println("...Failed!");
                         }
                     } else {
-                        System.out.println("[UNKNOWN COMMAND] - USAGE: /rep, /fav, /unfav, /rt, /rm, /find, /sum, /exit");
+                        System.out.println("[UNKNOWN COMMAND] - USAGE: /rep, /fav, /unfav, /rt, /rm, /find, /exit");
                     }
                 }
             } else {

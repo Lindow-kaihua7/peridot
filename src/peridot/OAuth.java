@@ -1,6 +1,9 @@
 package peridot;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
@@ -84,9 +87,9 @@ public class OAuth {
     private String requestTokenURL = "https://api.twitter.com/oauth/request_token";
     private String authorizeURL = "https://twitter.com/oauth/authorize";
     private String accessTokenURL = "https://api.twitter.com/oauth/access_token";
-    private String postURL = "https://api.twitter.com/statuses/update.xml";
+    private String postURL = "https://api.twitter.com/1/statuses/update.json";
     private String userStreamURL = "https://userstream.twitter.com/2/user.json";
-    private String friendsListURL = "https://api.twitter.com/1/friends/ids.xml";
+    //private String friendsListURL = "https://api.twitter.com/1/friends/ids.xml";
     private String favURL = "https://api.twitter.com/1/favorites/create/";
     private String unfavURL = "https://api.twitter.com/1/favorites/destroy/";
     private String retweetURL = "https://api.twitter.com/1/statuses/retweet/";
@@ -304,8 +307,8 @@ public class OAuth {
 
     /**
      * Post to Twitter
-     * 
-     * @param str content
+     *     
+* @param str content
      * @param replyStatusID StatusID
      */
     public boolean post(String str, String replyStatusID) {
@@ -362,8 +365,8 @@ public class OAuth {
 
     /**
      * generate parameter string
-     * 
-     * @param consumerkey consumerKey
+     *     
+* @param consumerkey consumerKey
      * @param oauthtoken Token(RequestToken or AccessToken)
      * @param oauthverifier PinCode
      * @param status Tweet
@@ -393,11 +396,12 @@ public class OAuth {
      * get TimeLine
      */
     public void getTimeLine() {
+        tweetList.clear();
         String res = basicTwitterAccess("GET", this.timeLineURL);
         if (res == null) {
             return;
         }
-
+        
         if (res != null) {
             try {
                 ArrayList list = JSON.decode(res, ArrayList.class);
@@ -426,6 +430,7 @@ public class OAuth {
      * get Favorites
      */
     public void getFavorites() {
+        tweetList.clear();
         String res = basicTwitterAccess("GET", this.favoritesURL);
         if (res == null) {
             return;
@@ -460,6 +465,7 @@ public class OAuth {
      * get Mentions
      */
     public void getMentions() {
+        tweetList.clear();
         String res = basicTwitterAccess("GET", this.mentionsURL);
         if (res == null) {
             return;
@@ -491,48 +497,48 @@ public class OAuth {
 
     /**
      * add to favorites
-     *
-     * @param statusID statusid
+     *     
+* @param statusID statusid
      */
     public boolean fav(String statusID) {
-        String res = basicTwitterAccess("POST", this.favURL + statusID + ".xml");
+        String res = basicTwitterAccess("POST", this.favURL + statusID + ".json");
         return (res != null);
     }
 
     /**
      * remove from favorites
-     *
-     * @param statusID statusid
+     *     
+* @param statusID statusid
      */
     public boolean unFav(String statusID) {
-        String res = basicTwitterAccess("POST", this.unfavURL + statusID + ".xml");
+        String res = basicTwitterAccess("POST", this.unfavURL + statusID + ".json");
         return (res != null);
     }
 
     /**
      * Retweet
-     *
-     * @param statusID statusid
+     *     
+* @param statusID statusid
      */
     public boolean retweet(String statusID) {
-        String res = basicTwitterAccess("POST", this.retweetURL + statusID + ".xml");
+        String res = basicTwitterAccess("POST", this.retweetURL + statusID + ".json");
         return (res != null);
     }
 
     /**
      * remove post
-     * 
-     * @param statusID statusid
+     *     
+* @param statusID statusid
      */
     public boolean remove(String statusID) {
-        String res = basicTwitterAccess("POST", this.removeURL + statusID + ".xml");
+        String res = basicTwitterAccess("POST", this.removeURL + statusID + ".json");
         return (res != null);
     }
 
     /**
      * search query word
-     *
-     * @param query queryword
+     *     
+* @param query queryword
      */
     public void search(String query) {
         HttpClient client = new DefaultHttpClient();
@@ -711,8 +717,8 @@ public class OAuth {
 
     /**
      * TweetList
-     * 
-     * @param statusID statusid
+     *     
+* @param statusID statusid
      * @param screenName screenname
      * @param name name
      * @param text content
@@ -891,7 +897,8 @@ public class OAuth {
     /**
      * create signature
      */
-    private String getSig(String key, String text) {SecretKeySpec signingKey = new SecretKeySpec(key.getBytes(), "HmacSHA1");
+    private String getSig(String key, String text) {
+        SecretKeySpec signingKey = new SecretKeySpec(key.getBytes(), "HmacSHA1");
         Mac mac;
         try {
             mac = Mac.getInstance(signingKey.getAlgorithm());

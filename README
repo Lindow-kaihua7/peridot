@@ -5,14 +5,14 @@ It includes The Apache Software Foundation Libraries.
 You can see license term at http://www.apache.org/licenses/
 
 How to use
-1.Java -jar peridot.jar
+1.Java -jar peridot.jar(if you use in utf8, you input "java -Dfile.encoding=UTF-8 -jar peridot.jar")
 2.Go to URL & Enter Pin Code
 3.enjoy it!
 
 4.
 commands:
 /rep id tweet     :  Reply to id
-/fav id           :  Add to favorte
+/fav id           :  Add to favorite
 /unfav id         :  Remove from favorite
 /rm id            :  Remove post
 /rt id            :  ReTweet

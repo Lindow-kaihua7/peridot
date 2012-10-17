@@ -2,17 +2,12 @@ package peridot;
 
 import java.beans.XMLDecoder;
 import java.beans.XMLEncoder;
-import java.io.BufferedInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 
 /**
- *
- * @author lindow
- */
+*
+* @author lindow
+*/
 public class Setting {
 
     public String Token;
@@ -24,59 +19,39 @@ public class Setting {
     
     
     /**
-     * @return AccessToken
-     */
+* @return AccessToken
+*/
     public String getAccessToken() {
         return this.Token;
     }
 
     /**
-     * @param value AccessToken
-     */
+* @param value AccessToken
+*/
     public void setAccessToken(String value) {
         this.Token = value;
     }
 
     /**
-     * @return AccessTokenSecret
-     */
+* @return AccessTokenSecret
+*/
     public String getAccessSecret() {
         return this.Secret;
     }
 
     /**
-     * @param value AccessTokenSecret
-     */
+* @param value AccessTokenSecret
+*/
     public void setAccessSecret(String value) {
         this.Secret = value;
     }
     
-    /**
-     * 
-     * @return summaryFlag
-     */
-    /*
-    public String getSummaryFlag() {
-        return this.summaryFlag;
-    }
-    * 
-    */
-    
-    /**
-     * @param value summaryFlag
-     */
-    /*
-    public void setSummaryFlag(String value) {
-        this.summaryFlag = value;
-    }
-    * 
-    */
 
     /**
-     * save to XML File
-     * @param path PATH to save
-     * @param object object
-     */
+* save to XML File
+* @param path PATH to save
+* @param object object
+*/
     public synchronized void writeXML(String path, Object object) {
         XMLEncoder enc = null;
         ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -111,9 +86,9 @@ public class Setting {
     }
 
     /**
-     * read from XML File
-     * @param path PATH
-     */
+* read from XML File
+* @param path PATH
+*/
     public Object readXML(String path) {
         XMLDecoder d = null;
         try {
@@ -130,8 +105,8 @@ public class Setting {
     }
 
     /**
-     * save object
-     */
+* save object
+*/
     public void saveSettings() {
         try {
             writeXML(System.getProperty("user.home") + System.getProperty("file.separator") + "config.settings", this);
@@ -143,8 +118,8 @@ public class Setting {
     }
 
     /**
-     * read object
-     */
+* read object
+*/
     public void loadSettings() {
         try {
             this.Token = ((Setting) readXML(System.getProperty("user.home") + System.getProperty("file.separator") + "config.settings")).getAccessToken();
